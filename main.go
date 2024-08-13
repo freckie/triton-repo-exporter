@@ -23,10 +23,13 @@ func main() {
 	}
 	log.Infof("tritonAddr=%s", tritonAddr)
 
-	hostname, err := os.Hostname()
-	if err != nil {
-		log.Errorf("Failed to get hostname: %s", err)
-		os.Exit(1)
+	hostname := os.Getenv("NODENAME")
+	if hostname == "" {
+		hostname, err = os.Hostname()
+		if err != nil {
+			log.Errorf("Failed to get hostname: %s", err)
+			os.Exit(1)
+		}
 	}
 	log.Infof("hostname=%s", hostname)
 
