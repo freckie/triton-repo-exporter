@@ -29,7 +29,7 @@ func (c *RepositoryCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (c *RepositoryCollector) Collect(ch chan<- prometheus.Metric) {
-	url := fmt.Sprintf("http://%s/metrics", c.tritonAddr)
+	url := fmt.Sprintf("http://%s/v2/repository/index", c.tritonAddr)
 	r, err := http.Post(url, "application/json", nil)
 	if err != nil {
 		log.Errorf("Failed to make http request to the triton server: %s", err)
