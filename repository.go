@@ -42,13 +42,18 @@ func (c *RepositoryCollector) Collect(ch chan<- prometheus.Metric) {
 		log.Errorf("Failed to parse response from the triton server: %s", err)
 	}
 
+	var gaugeValue float64
 	for _, it := range result {
-		if it.State == "" {
+		if it.state == "" {
 			continue
+		} else if it.state == "READY" {
+			gaugeValue = 1
+		} else {
+			gaugeValue = 0
 		}
 
-		labelVals := []string{c.hostname, it.Name, it.State, it.Version}
-		ch <- prometheus.MustNewConstMetric(c.modelsMetric, prometheus.GaugeValue, 1, labelVals...)
+		labelVals := []string{c.hostname, it.Name, it.Version}
+		ch <- prometheus.MustNewConstMetric(c.modelsMetric, prometheus.GaugeValue, gaugeValue, labelVals...)
 	}
 
 }
@@ -56,6 +61,6 @@ func (c *RepositoryCollector) Collect(ch chan<- prometheus.Metric) {
 type tritonRepositoryModelResp struct {
 	Name    string `json:"name"`
 	Version string `json:"version,omitempty"`
-	State   string `json:"state,omitempty"`
 	Reason  string `json:"reason,omitempty"`
+	state   string
 }
